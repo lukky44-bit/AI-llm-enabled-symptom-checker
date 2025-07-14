@@ -71,3 +71,6 @@ Ask health-related questions using Gemini-powered LLM:
 
 <h3>📄 License</h3>
 MIT License – use freely for personal and academic purposes.
+
+<h2>OUTPUT</h2>
+Check the working of this project by looking into the output_video folder for video demonstration.
