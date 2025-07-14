@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Symptom Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #2d3a4b;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 420px;
+            width: 100%;
+            margin: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+        label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2d3a4b;
+        }
+        input[type="text"] {
+            padding: 0.8rem 1rem;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus {
+            border: 1.5px solid #4f8cff;
+        }
+        .btn {
+            background: #4f8cff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.9rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .result-section {
+            margin-top: 2rem;
+            background: #f7fafd;
+            border-radius: 14px;
+            padding: 1.5rem 1.2rem;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
+        }
+        .result-section h3 {
+            margin-top: 0;
+            color: #2563eb;
+        }
+        .precautions-list {
+            margin: 0.7rem 0 0 1.2rem;
+        }
+        .severity {
+            font-weight: 600;
+            margin-top: 1rem;
+            color: #e67e22;
+        }
+        .emergency-btn {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.12);
+            transition: background 0.2s;
+        }
+        .emergency-btn:hover {
+            background: #b71c1c;
+        }
+        @media (max-width: 600px) {
+            .card {
+                padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+                max-width: 98vw;
+            }
+            .result-section {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">AI Symptom Checker</div>
+    <div class="container">
+        <div class="card">
+            <form id="symptomForm">
+                <div class="form-group">
+                    <label for="symptoms">Enter your symptoms (comma-separated):</label>
+                    <input type="text" id="symptoms" name="symptoms" placeholder="e.g. fever, cough, headache" required />
+                </div>
+                <button type="submit" class="btn">Check Health</button>
+            </form>
+            <div id="result" class="result-section" style="display:none;"></div>
+        </div>
+        <div class="card" style="margin-top:1.5rem;">
+            <form id="llmForm">
+                <div class="form-group">
+                    <label for="llmInput">Ask AI anything about your health:</label>
+                    <input type="text" id="llmInput" name="llmInput" placeholder="e.g. What does fever mean?" required />
+                </div>
+                <button type="submit" class="btn">Ask AI</button>
+            </form>
+            <div id="llmResult" class="result-section" style="display:none;"></div>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('symptomForm');
+        const resultDiv = document.getElementById('result');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+            const symptoms = document.getElementById('symptoms').value;
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symptoms })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    let html = `<h3>Predicted Disease: ${data.predicted_disease}</h3>`;
+                    html += `<div><strong>Description:</strong><br>${data.description}</div>`;
+                    html += `<div style="margin-top:0.8rem;"><strong>Precautionary Measures:</strong><ul class="precautions-list">`;
+                    data.precautions.forEach(p => {
+                        html += `<li>${p}</li>`;
+                    });
+                    html += `</ul></div>`;
+                    if ('emergency' in data) {
+                        if (data.emergency) {
+                            html += `<div class="severity" style="color:#e53935;">Severity: High</div>`;
+                            html += `<button class="emergency-btn" onclick="alert('📞 Calling Emergency Services (108)...')">Emergency: Call 108</button>`;
+                        } else {
+                            html += `<div class="severity">Severity: Normal</div>`;
+                        }
+                    }
+                    resultDiv.innerHTML = html;
+                    resultDiv.style.display = 'block';
+                } else {
+                    resultDiv.innerHTML = `<div style="color:#e53935;">${data.error || 'An error occurred.'}</div>`;
+                    resultDiv.style.display = 'block';
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div style="color:#e53935;">Could not connect to backend.</div>`;
+                resultDiv.style.display = 'block';
+            }
+        });
+        // LLM chat form
+        const llmForm = document.getElementById('llmForm');
+        const llmResultDiv = document.getElementById('llmResult');
+        llmForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            llmResultDiv.style.display = 'none';
+            llmResultDiv.innerHTML = '';
+            const input = document.getElementById('llmInput').value;
+            try {
+                const response = await fetch('http://127.0.0.1:5000/llm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    llmResultDiv.innerHTML = `<div><strong>AI Response:</strong><br>${data.response}</div>`;
+                    llmResultDiv.style.display = 'block';
+                } else {
+                    llmResultDiv.innerHTML = `<div style="color:#e53935;">${data.error || 'An error occurred.'}</div>`;
+                    llmResultDiv.style.display = 'block';
+                }
+            } catch (err) {
+                llmResultDiv.innerHTML = `<div style="color:#e53935;">Could not connect to backend.</div>`;
+                llmResultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
