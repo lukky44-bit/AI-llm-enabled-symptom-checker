@@ -27,7 +27,7 @@ Data Handling: Pandas, Scikit-learn
 Deployment: Localhost (can be hosted on any platform)
 
 <h2>📂 Project Structure</h2>
-'''
+```
 ai-health-symptom-checker/
 ├── models/
 │ ├── vectorizer.pkl
@@ -42,7 +42,7 @@ ai-health-symptom-checker/
 ├── .env # (for GEMINI_API key)
 ├── model_training.ipynb
 └── README.md
-'''
+```
 <h2>📦 Installation</h2>
 Clone this repo
 
