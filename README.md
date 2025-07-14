@@ -1,7 +1,8 @@
-AI-Powered Symptom Checker 🩺
+# AI-Powered Symptom Checker 🩺
+
 A smart health monitoring system that uses deep learning and LLMs to predict diseases based on user symptoms. It provides detailed descriptions, precautionary advice, and emergency severity alerts through an intuitive UI.
 
-🚀 Features
+<h2>🚀 Features</h2>
 Symptom-based disease prediction using a Keras deep learning model
 
 Integrated datasets for disease descriptions, precautions, and symptom severity
@@ -12,7 +13,7 @@ Gemini LLM integration for natural language Q&A on health
 
 Modern UI built with HTML/CSS + Flask backend
 
-🛠 Tech Stack
+<h2>🛠 Tech Stack</h2>
 Frontend: HTML, CSS, JavaScript
 
 Backend: Flask (Python)
@@ -25,7 +26,7 @@ Data Handling: Pandas, Scikit-learn
 
 Deployment: Localhost (can be hosted on any platform)
 
-📂 Project Structure
+<h2>📂 Project Structure</h2>
 ai-health-symptom-checker/
 ├── models/
 │ ├── vectorizer.pkl
@@ -40,7 +41,7 @@ ai-health-symptom-checker/
 ├── .env # (for GEMINI_API key)
 ├── model_training.ipynb
 └── README.md
-📦 Installation
+<h2>📦 Installation</h2>
 Clone this repo
 
 Install dependencies
@@ -50,7 +51,7 @@ GEMINI_API=your_api_key_here
 Run the Flask app:
 python app.py
 
-🔍 How It Works
+<h2>🔍 How It Works</h2>
 Enter symptoms like fever, cough, headache
 
 App predicts the disease, provides description & precautions
@@ -59,12 +60,12 @@ If severity is high, an emergency alert (Call 108) is shown
 
 Use the LLM chat box to ask questions like "What is dengue?"
 
-🤖 LLM Integration
+<h2>🤖 LLM Integration</h2>
 Ask health-related questions using Gemini-powered LLM:
 
 “What does fatigue indicate?”
 
 “How to prevent viral infections?”
 
-📄 License
+<h3>📄 License</h3>
 MIT License – use freely for personal and academic purposes.
